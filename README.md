@@ -27,5 +27,212 @@ npm install redux react-redux @reduxjs/toolkit
 yarn add redux react-redux @reduxjs/toolkit
 ```
 
-## ✒️ main.tsx, App.tsx, middleware.ts, slice.ts, index.ts 수정 및작성
+## ✒️ main.tsx, App.tsx, User.ts, Theme.ts 수정 및 작성
 ### :zap: main.tsx
+```typescript
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+import './index.css'
+import { configureStore } from "@reduxjs/toolkit";
+import { Provider } from "react-redux";
+import userReducer from "./features/User";
+import themeReducer from "./features/Theme";
+import {
+  TypedUseSelectorHook,
+  useDispatch as _useDispatch,
+  useSelector as _useSelector
+} from "react-redux";
+
+// 리덕스에서 타입 가져오기
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+// useDispatch, useSelector에 타입 추가하여 타입 설정
+export const useDispatch: () => AppDispatch = _useDispatch;
+export const useSelector: TypedUseSelectorHook<RootState> = _useSelector;
+
+// 리덕스 폴더 features에서 reducer를 가져온 다음 store 변수에 담는다.
+const store = configureStore({
+  reducer: {
+    user: userReducer,
+    theme: themeReducer,
+  },
+});
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </React.StrictMode>,
+)
+```
+### :zap: App.tsx
+```typescript
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import './App.css'
+import Profile from "./components/Profile";
+import Login from "./components/Login";
+import ChangeColor from "./components/ChangeColor";
+
+export default function App(): JSX.Element {
+  return (
+    <div className="App">
+      <div>
+        <a href="https://ko.redux.js.org/introduction/getting-started/" target="_blank">
+          <img src="https://camo.githubusercontent.com/7b7f04b16cc2d2d4a32985710e4d640985337a32bbb1e60cdacede2c8a4ae57b/68747470733a2f2f63646e2e776f726c64766563746f726c6f676f2e636f6d2f6c6f676f732f72656475782e737667" className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://reactjs.org" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <Profile />
+      <Login />
+      <ChangeColor />
+    </div>
+  )
+}
+```
+### :zap: User.ts
+```typescript
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+interface StateType1 {
+    name: string;
+    age: number;
+    email: string;
+}
+
+const initialStateValue: StateType1 = { name: "", age: 0, email: "" };
+
+export const userSlice = createSlice({
+    name: "user",
+    initialState: { value: initialStateValue },
+    reducers: {
+        login: (state, action: PayloadAction<{ name: string; age: number ; email: string }>) => {
+            state.value = action.payload;
+        },
+        logout: (state) => {
+            state.value = initialStateValue;
+        },
+    },
+});
+
+export const { login, logout } = userSlice.actions;
+
+export default userSlice.reducer;
+```
+### :zap: Theme.ts
+```typescript
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+interface StateType {
+    value: string;
+}
+
+const initialState: StateType = { value: "" };
+
+export const themeSlice = createSlice({
+    name: "theme",
+    initialState,
+    reducers: {
+        changeColor: (state, action: PayloadAction<string>) => {
+            state.value = action.payload;
+        },
+    },
+});
+
+export const { changeColor } = themeSlice.actions;
+
+export default themeSlice.reducer;
+```
+## ✒️ ChangeColor.tsx, Login.tsx, Profile.ts 수정 및작성
+### :zap: ChangeColor.tsx
+```typescript
+import React, { useState } from "react";
+import { useDispatch } from "../main";
+import { changeColor } from "../features/Theme";
+
+export default function ChangeColor(): JSX.Element {
+  const [color, setColor] = useState<string>("");
+  const dispatch = useDispatch();
+
+  return (
+    <div>
+      <input
+        type="text"
+        placeholder="색상을 입력하세요."
+        onChange={(event) => {
+          setColor(event.target.value);
+        }}
+        style={{
+          padding: "10px 15px",
+          borderRadius: "7.5px",
+          border: "1px solid #ccc",
+          marginRight: "15px",
+          fontSize: "1rem"
+        }}
+      />
+      <button
+        onClick={() => {
+          dispatch(changeColor(color));
+        }}
+      >
+        색상 변환
+      </button>
+    </div>
+  );
+}
+```
+### :zap: Login.tsx
+```typescript
+import React from "react";
+import { useDispatch } from "../main";
+import { login, logout } from "../features/User";
+
+export default function Login(): JSX.Element {
+  const dispatch = useDispatch();
+
+  return (
+    <div style={{ marginBottom: "20px" }}>
+      <button
+        onClick={() => {
+          dispatch(login({ name: "Dong-ho", age: 29, email: "dong963939@gmail.com" }));
+        }}
+        style={{ marginRight: "15px" }}
+      >
+        로그인
+      </button>
+
+      <button
+        onClick={() => {
+          dispatch(logout());
+        }}
+      >
+        로그아웃
+      </button>
+    </div>
+  );
+}
+```
+### :zap: Profile.tsx
+```typescript
+import React from "react";
+import { useSelector } from "../main";
+
+export default function Profile(): JSX.Element {
+  const user = useSelector((state) => state.user.value);
+  const themeColor = useSelector((state) => state.theme.value);
+
+  return (
+    <div style={{ color: themeColor }}>
+      <h1> Profile Page</h1>
+      <p> Name: {user.name} </p>
+      <p> Age: {user.age}</p>
+      <p> Email: {user.email}</p>
+    </div>
+  );
+}
+```
