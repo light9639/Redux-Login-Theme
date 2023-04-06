@@ -29,6 +29,9 @@ yarn add redux react-redux @reduxjs/toolkit
 
 ## ✒️ main.tsx, App.tsx, User.ts, Theme.ts 수정 및 작성
 ### :zap: main.tsx
+- 리덕스에서 타입 가져오기
+- `useDispatch`, `useSelector`에 타입 추가하여 타입 설정
+- 리덕스 폴더 features에서 reducer를 가져온 다음 store 변수에 담는다.
 ```typescript
 import React from 'react'
 import ReactDOM from 'react-dom/client'
@@ -69,6 +72,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 )
 ```
 ### :zap: App.tsx
+- `Profile`, `Login`, `ChangeColor`을 `import`하여 하단에 넣는다.
 ```typescript
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
@@ -96,6 +100,7 @@ export default function App(): JSX.Element {
 }
 ```
 ### :zap: User.ts
+- 리덕스 툴킷에서 필요한 함수를 `import` 한 뒤 3가지 변수를 입력하면 오브젝트가 변환되도록 만드는 리덕스  생성한다.
 ```typescript
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -125,6 +130,7 @@ export const { login, logout } = userSlice.actions;
 export default userSlice.reducer;
 ```
 ### :zap: Theme.ts
+- 리덕스 툴킷에서 필요한 함수를 `import` 한 뒤 색상을 입력하면 변화하도록 하는  생성한다.
 ```typescript
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -150,6 +156,7 @@ export default themeSlice.reducer;
 ```
 ## ✒️ ChangeColor.tsx, Login.tsx, Profile.ts 수정 및작성
 ### :zap: ChangeColor.tsx
+- `input` 안에 데이터가 색상이면 상단 텍스트의 색상을 입력시킨 색상으로 변화시킨다.
 ```typescript
 import React, { useState } from "react";
 import { useDispatch } from "../main";
@@ -187,6 +194,7 @@ export default function ChangeColor(): JSX.Element {
 }
 ```
 ### :zap: Login.tsx
+- `login`함수 안에 입력한 데이터대로 텍스트를 변환시킨다.
 ```typescript
 import React from "react";
 import { useDispatch } from "../main";
@@ -218,6 +226,7 @@ export default function Login(): JSX.Element {
 }
 ```
 ### :zap: Profile.tsx
+- `Login.tsx`에서 입력한 데이터가 변환되면 이 데이터값이 변환되도록 만든다.
 ```typescript
 import React from "react";
 import { useSelector } from "../main";
